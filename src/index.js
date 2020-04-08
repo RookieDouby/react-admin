@@ -2,7 +2,7 @@ import React from 'react'
 import { render } from 'react-dom'
 
 import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom'
-import { adminRouter, mainRouter } from './routes'
+import { mainRoutes } from './routes'
 
 import App from './App'
 import './index.less';
@@ -18,7 +18,7 @@ render(
                 }}
             />
             {
-                mainRouter.map(route => {
+                mainRoutes.map(route => {
                     return (
                         <Route
                             key={route.pathname}
