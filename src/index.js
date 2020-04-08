@@ -20,7 +20,7 @@ render(
                     return <Route key={route.pathname} path={route.pathname} component={route.component} />
                 })
             }
-            <Redirect to="/admin" from="/" exact />
+            <Redirect to={mainRouter[0].pathname} from="/" exact />
             <Redirect to="/404" exact />
         </Switch>
     </Router>,
