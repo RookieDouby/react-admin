@@ -7,7 +7,6 @@ import { mainRoutes } from './routes'
 // 国际化部分
 import { ConfigProvider } from 'antd'
 import zhCN from 'antd/es/locale/zh_CN';
-import enUS from 'antd/es/locale/en_US';
 
 import App from './App'
 import './index.less';

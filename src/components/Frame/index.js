@@ -1,15 +1,12 @@
 import React, { Component } from 'react'
 import { withRouter } from 'react-router-dom'
-import { Layout, Menu, Breadcrumb } from 'antd';
-import * as Icon from '@ant-design/icons';
+import { Layout, Menu } from 'antd';
 
 import logo from './logo.png'
 
 import './Frame.less'
 
-const { SubMenu } = Menu;
 const { Header, Content, Sider } = Layout;
-var iconType = 'DashboardOutlined';
 
 class Frame extends Component {
 
