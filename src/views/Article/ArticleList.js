@@ -42,6 +42,8 @@ export default class ArticleList extends Component {
 
             ],
             total: 0,
+            offset: 0,
+            limited: 10,
         }
     }
 
@@ -50,7 +52,7 @@ export default class ArticleList extends Component {
         this.setState({
             isLoading: true,
         })
-        getArticleList()
+        getArticleList(this.state.offset, this.state.limited)
         .then((res) => {
             const columnKeys = Object.keys(res.list[0])
             const columns = columnKeys.map(item => {
@@ -84,11 +86,11 @@ export default class ArticleList extends Component {
                 key: 'actions',
                 render: (text, record, index) => {
                     return (
-                       <Button.Group>
-                           <Button type="primary">编辑</Button>
-                           <Button>查看</Button>
-                           <Button danger>删除</Button>
-                       </Button.Group>
+                        <Button.Group>
+                            <Button type="primary">编辑</Button>
+                            <Button>查看</Button>
+                            <Button danger>删除</Button>
+                        </Button.Group>
                     )
                 }
             })
@@ -106,6 +108,26 @@ export default class ArticleList extends Component {
         })
     }
 
+    // 分页回调
+    onPageChange = (page, pageSize) => {
+        this.setState({
+            offset: pageSize * (page - 1),
+            limited: pageSize,
+        }, () => {
+            this.getData();
+        })
+    }
+
+    // 跳页器回调
+    onShowSizeChange = (page, pageSize) => {
+        this.setState({
+            offset: 0,
+            limited: pageSize,
+        }, () => {
+            this.getData();
+        })
+    }
+
     componentDidMount() {
         this.getData()
     }
@@ -118,10 +140,20 @@ export default class ArticleList extends Component {
                         loading={this.state.isLoading}
                         dataSource={this.state.articleList}
                         columns={this.state.columns} pagination={{
+                            current: this.state.offset / this.state.limited + 1,
                             pageSize: 10,
                             total: this.state.total,
                             hideOnSinglePage: true,
-                            showTotal: (total) => `共${total}条`
+                            showQuickJumper: true,
+                            showSizeChanger: true,
+                            pageSizeOptions: ['10', '20', '30', '40'],
+                            showTotal: (total) => `共${total}条`,
+                            onChange: (page, pageSize) => {
+                                this.onPageChange(page, pageSize)
+                            },
+                            onShowSizeChange: (current, size) => {
+                                this.onShowSizeChange(current, size)
+                            }
                         }}
                         rowKey={record => record.id}
                     />
