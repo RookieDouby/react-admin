@@ -84,12 +84,12 @@ export default class ArticleList extends Component {
             columns.push({
                 title: '操作',
                 key: 'actions',
+                width: 150,
                 render: (text, record, index) => {
                     return (
                         <Button.Group>
-                            <Button type="primary">编辑</Button>
-                            <Button>查看</Button>
-                            <Button danger>删除</Button>
+                            <Button size="small" type="primary">编辑</Button>
+                            <Button size="small" danger>删除</Button>
                         </Button.Group>
                     )
                 }
@@ -135,7 +135,11 @@ export default class ArticleList extends Component {
     render() {
         return (
             <div>
-                <Card title="文章列表" bordered={false}>
+                <Card
+                    title="文章列表"
+                    bordered={false}
+                    extra={<Button type="link" >导出Excel</Button>}
+                    >
                     <Table
                         loading={this.state.isLoading}
                         dataSource={this.state.articleList}
