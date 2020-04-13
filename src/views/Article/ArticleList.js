@@ -4,9 +4,18 @@ import {
     Table,
     Button,
     Tag,
+    Modal,
+    Typography,
+    message,
 } from 'antd'
-import { getArticleList } from '../../request'
+import { ExclamationCircleOutlined } from '@ant-design/icons'
+import {
+    getArticleList,
+    deleteArticleById,
+} from '../../request'
 import moment from 'moment'
+
+const { confirm } = Modal;
 
 const titleDisplayMapper = {
     id: 'id',
@@ -44,6 +53,11 @@ export default class ArticleList extends Component {
             total: 0,
             offset: 0,
             limited: 10,
+            modalVisible: false,
+            deleteArticleModalContent: null,
+            deleteArticleTitle: '', // 删除Modal的title
+            deleteArticleConfirmLoading: false, // 删除文章，点击确认时候的loading
+            curDeleteArticleId: null,
         }
     }
 
@@ -89,7 +103,7 @@ export default class ArticleList extends Component {
                     return (
                         <Button.Group>
                             <Button size="small" type="primary">编辑</Button>
-                            <Button size="small" danger>删除</Button>
+                            <Button size="small" danger onClick={this.showDeleteModal.bind(this, record)}>删除</Button>
                         </Button.Group>
                     )
                 }
@@ -128,6 +142,46 @@ export default class ArticleList extends Component {
         })
     }
 
+    // 显示删除文章的Modal
+    showDeleteModal = (article) => {
+        this.setState({
+            modalVisible: true,
+            deleteArticleModalContent: <Typography.Text>确认删除<Typography.Text type="danger">{article.title}</Typography.Text>?</Typography.Text>,
+            curDeleteArticleId: article.id
+        })
+    }
+
+    // 删除文章，调用接口
+    deleteArticle = (id) =>{
+        deleteArticleById(id).then(res => {
+            message.success(res.msg)
+            this.setState({
+                modalVisible: false
+            })
+        }).catch(err => {
+            
+        }).finally(() => {
+            this.setState({
+                deleteArticleConfirmLoading: false,
+            })
+        })
+    }
+
+    // Modal取消
+    handleCancel = () => {
+        this.setState({
+            modalVisible: false
+        })
+    }
+    // Modal确定
+    handleOk = (e) => {
+        this.setState({
+            deleteArticleConfirmLoading: true,
+        })
+        this.deleteArticle(this.state.curDeleteArticleId);
+    }
+    dele
+
     componentDidMount() {
         this.getData()
     }
@@ -162,6 +216,19 @@ export default class ArticleList extends Component {
                         rowKey={record => record.id}
                     />
                 </Card>
+                <Modal
+                    visible={this.state.modalVisible}
+                    title="此操作不可逆，请慎重操作!"
+                    onCancel={this.handleCancel}
+                    maskClosable={false}
+                    onOk={this.handleOk}
+                    confirmLoading={this.state.deleteArticleConfirmLoading}
+                    centered={true}
+                    >
+                        {
+                            this.state.deleteArticleModalContent
+                        }
+                    </Modal>
             </div>
         )
     }
