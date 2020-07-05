@@ -14,6 +14,7 @@ import {
     deleteArticleById,
 } from '../../request'
 import moment from 'moment'
+import XLSX from 'xlsx'
 
 const { confirm } = Modal;
 
@@ -85,7 +86,7 @@ export default class ArticleList extends Component {
                         key: item,
                         render: (text, record, index) => {
                             const { createAt } = record
-                            return moment(createAt).format('YYYY年MM月DD日 hh:mm:ss')
+                            return moment(createAt).format('YYYY年MM月DD日 HH:mm:ss')
                         },
                     }
                 }
@@ -132,7 +133,7 @@ export default class ArticleList extends Component {
         })
     }
 
-    // 跳页器回调
+    // 每页总数回调
     onShowSizeChange = (page, pageSize) => {
         this.setState({
             offset: 0,
@@ -159,7 +160,7 @@ export default class ArticleList extends Component {
                 modalVisible: false
             })
         }).catch(err => {
-            
+
         }).finally(() => {
             this.setState({
                 deleteArticleConfirmLoading: false,
@@ -180,7 +181,26 @@ export default class ArticleList extends Component {
         })
         this.deleteArticle(this.state.curDeleteArticleId);
     }
-    dele
+
+
+    toExcel = () => {
+        // 组装数据
+        const data = ["id", "title", "author", "amount", "createAt"]
+        this.state.articleList.forEach(item => {
+            data.push([
+                item.id,
+                item.title,
+                item.author,
+                item.amount,
+                moment(item.createAt).format('YYYY-MM-DD-HH-mm-ss'),
+            ])
+        })
+        console.log(data)
+        const ws = XLSX.utils.aoa_to_sheet(data)
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "SheetJS");
+        XLSX.writeFile(wb, `articles-${this.state.offset / this.state.limited + 1}-${moment().format("YYYY-MM-DD-HH-mm-ss")}.xlsx`)
+    }
 
     componentDidMount() {
         this.getData()
@@ -192,7 +212,7 @@ export default class ArticleList extends Component {
                 <Card
                     title="文章列表"
                     bordered={false}
-                    extra={<Button type="link" >导出Excel</Button>}
+                    extra={<Button type="link" onClick={this.toExcel}>导出Excel</Button>}
                     >
                     <Table
                         loading={this.state.isLoading}
